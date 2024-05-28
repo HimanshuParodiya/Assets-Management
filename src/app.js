@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
+import assetRouter from './routes/asset.routes.js'
 
 const app = express()
 
@@ -16,6 +17,10 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }))
 app.use(express.static("public"))
 // cookieParser -> to perform CRUD operation form server to user's browser
 app.use(cookieParser())
+
+// Routes
+app.use("/api/v1/assets", assetRouter)
+
 
 export default app
 

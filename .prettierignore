@@ -1,0 +1,8 @@
+#  prettier formatting will not affect these files
+/.vscode
+/node_modules
+./dist
+
+*.env
+.env
+.env.*

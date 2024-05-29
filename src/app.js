@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import assetRouter from './routes/asset.routes.js'
+import ticketRouter from './routes/ticket.routes.js'
 
 const app = express()
 
@@ -20,6 +21,8 @@ app.use(cookieParser())
 
 // Routes
 app.use("/api/v1/assets", assetRouter)
+
+app.use("/api/v1/ticket", ticketRouter)
 
 
 export default app

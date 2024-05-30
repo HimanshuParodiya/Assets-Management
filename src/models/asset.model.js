@@ -1,5 +1,26 @@
 import mongoose from 'mongoose';
 
+
+// Define a subSchema for specifications
+const specificationSchema = new mongoose.Schema({
+    power: {
+        type: String,
+        required: [true, 'Please add power specification']
+    },
+    voltage: {
+        type: String,
+        required: [true, 'Please add voltage specification']
+    },
+    current: {
+        type: String,
+        required: [true, 'Please add current specification']
+    },
+    speed: {
+        type: String,
+        required: [true, 'Please add speed specification']
+    }
+});
+
 const assetSchema = new mongoose.Schema({
     motorId: {
         type: String,
@@ -50,22 +71,7 @@ const assetSchema = new mongoose.Schema({
         enum: ['Operational', 'Under Maintenance', 'Out of Service']
     },
     specifications: {
-        power: {
-            type: String,
-            required: [true, 'Please add power specification']
-        },
-        voltage: {
-            type: String,
-            required: [true, 'Please add voltage specification']
-        },
-        current: {
-            type: String,
-            required: [true, 'Please add current specification']
-        },
-        speed: {
-            type: String,
-            required: [true, 'Please add speed specification']
-        }
+        type: [specificationSchema]
     }
 }, {
     timestamps: true // Automatically add createdAt and updatedAt timestamps

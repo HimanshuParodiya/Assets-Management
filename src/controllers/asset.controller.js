@@ -64,4 +64,63 @@ const addAsset = asyncHandler(async (req, res) => {
     return res.status(201).json(new ApiResponse(201, createdAsset, "Asset added successfully"));
 });
 
-export { addAsset };
+
+const updateAssetDetails = asyncHandler(async (req, res) => {
+    // store the update assets id 
+    const assetId = req.params.id;
+    // get data from params
+    const {
+        motorId, name, description, location, manufacturer, modelNumber, serialNumber,
+        installationDate, lastMaintenanceDate, status, power, voltage, current, speed
+    } = req.body;
+
+    // Find the asset to update
+    const asset = await Asset.findById(assetId);
+    if (!asset) {
+        throw new ApiError(404, "Asset not found");
+    }
+
+    // Prepare the fields to be updated
+    const updateFields = {};
+    if (motorId) updateFields.motorId = motorId;
+    if (name) updateFields.name = name;
+    if (description) updateFields.description = description;
+    if (location) updateFields.location = location;
+    if (manufacturer) updateFields.manufacturer = manufacturer;
+    if (modelNumber) updateFields.modelNumber = modelNumber;
+    if (serialNumber) updateFields.serialNumber = serialNumber;
+    if (installationDate) {
+        const parsedInstallationDate = parse(installationDate, 'dd-MM-yyyy', new Date());
+        if (!isValid(parsedInstallationDate)) {
+            throw new ApiError(400, 'Invalid date format for installationDate. Use dd-MM-yyyy.');
+        }
+        updateFields.installationDate = parsedInstallationDate;
+    }
+    if (lastMaintenanceDate) {
+        const parsedLastMaintenanceDate = parse(lastMaintenanceDate, 'dd-MM-yyyy', new Date());
+        if (!isValid(parsedLastMaintenanceDate)) {
+            throw new ApiError(400, 'Invalid date format for lastMaintenanceDate. Use dd-MM-yyyy.');
+        }
+        updateFields.lastMaintenanceDate = parsedLastMaintenanceDate;
+    }
+    if (status) updateFields.status = status;
+
+    // Validate and prepare specifications if provided
+    if (power || voltage || current || speed) {
+        updateFields.specifications = {
+            ...(power && { power }),
+            ...(voltage && { voltage }),
+            ...(current && { current }),
+            ...(speed && { speed }),
+        };
+    }
+
+    // Update the asset in the database
+    const updatedAsset = await Asset.findByIdAndUpdate(assetId, { $set: updateFields }, { new: true });
+
+    // Return the updated asset
+    return res.status(200).json(new ApiResponse(200, updatedAsset, "Asset details updated successfully"));
+});
+
+
+export { addAsset, updateAssetDetails }

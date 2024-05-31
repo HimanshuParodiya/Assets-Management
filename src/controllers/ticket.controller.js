@@ -45,5 +45,41 @@ const raiseTicket = asyncHandler(async (req, res) => {
 
     res.status(201).json(new ApiResponse(201, ticket, "Ticket raised successfully"));
 });
+const updateTicket = asyncHandler(async (req, res) => {
+    // Get the ticket id which needs to be updated
+    const ticketId = req.params.id;
 
-export { raiseTicket }
+    // Find the ticket by its ID
+    const ticket = await Ticket.findById(ticketId);
+
+    // If ticket does not exist, throw an error
+    if (!ticket) {
+        throw new ApiError(404, "Ticket not found");
+    }
+    // Get the update fields from the request body
+    const { dateRaised, status, ...updates } = req.body;
+    // Validate the status field
+    const validStatusValues = ["Open", "In Progress", "Resolved"];
+    if (status && !validStatusValues.includes(status)) {
+        throw new ApiError(400, "Invalid status value. Status must be one of: Open, In Progress, Resolved");
+    }
+    // Parse the dateRaised string into a Date object
+    const parsedDateRaised = parse(dateRaised, 'dd-MM-yyyy', new Date());
+
+    // Update the fields provided in the request body
+    Object.keys(updates).forEach((key) => {
+        ticket[key] = updates[key];
+    });
+
+    // Set the parsed dateRaised
+    ticket.dateRaised = parsedDateRaised;
+
+    // Save the updated ticket
+    await ticket.save({ validateBeforeSave: true });
+
+    // Return the updated ticket as a response
+    res.status(200).json(new ApiResponse(200, ticket, "Ticket updated successfully"));
+});
+
+
+export { raiseTicket, updateTicket }

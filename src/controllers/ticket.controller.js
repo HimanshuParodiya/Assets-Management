@@ -82,4 +82,21 @@ const updateTicket = asyncHandler(async (req, res) => {
 });
 
 
-export { raiseTicket, updateTicket }
+const deleteTicket = asyncHandler(async (req, res) => {
+    // get the id which needs to be deleted
+    const ticketId = req.params.id;
+
+    // find the asset and delete
+    const ticket = await Ticket.findByIdAndDelete(ticketId);
+
+    // handle case where asset is not found
+    if (!ticket) {
+        throw new ApiError(404, "Asset not found");
+    }
+
+    // return response
+    res.status(200).json(new ApiResponse(200, ticket, "Asset deleted successfully"));
+});
+
+
+export { raiseTicket, updateTicket, deleteTicket }

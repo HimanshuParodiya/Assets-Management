@@ -39,17 +39,18 @@ ticketSchema.pre('save', async function (next) {
     if (!this.isNew) {
         return next();
     }
-    // find and update the counter model
-    const counter = await Counter.findByIdAndUpdate(
-        { _id: 'ticketId' },
-        { $inc: { seq: 1 } },
-        { new: true, upsert: true }
+
+    // Find and update the counter model
+    const counter = await Counter.findOneAndUpdate(
+        { counterId: 'ticketId' },  // The filter criteria
+        { $inc: { seq: 1 } },        // The update operation
+        { new: true, upsert: true }  // Options: return new doc if one is upserted
     );
-    // update ticket id
+
+    // Update ticket ID
     this.ticketId = `TCK-${counter.seq}`;
     next();
 });
-
 
 
 

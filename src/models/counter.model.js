@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
+
 // This will be used to keep track of the sequence number for ticket IDs.
 const counterSchema = new mongoose.Schema({
-    _id: {
+    counterId: {
         type: String,
         required: true,
         unique: true

@@ -122,5 +122,21 @@ const updateAssetDetails = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, updatedAsset, "Asset details updated successfully"));
 });
 
+const deleteAsset = asyncHandler(async (req, res) => {
+    // get the id which needs to be deleted
+    const assetId = req.params.id;
 
-export { addAsset, updateAssetDetails }
+    // find the asset and delete
+    const asset = await Asset.findByIdAndDelete(assetId);
+
+    // handle case where asset is not found
+    if (!asset) {
+        throw new ApiError(404, "Asset not found");
+    }
+
+    // return response
+    res.status(200).json(new ApiResponse(200, asset, "Asset deleted successfully"));
+});
+
+
+export { addAsset, updateAssetDetails, deleteAsset }

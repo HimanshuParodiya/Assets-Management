@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Counter from "./counter.model.js";
 
 const ticketSchema = new mongoose.Schema({
     ticketId: {
@@ -9,7 +10,7 @@ const ticketSchema = new mongoose.Schema({
         index: true
 
     },
-    assetId: {
+    motorId: {
         type: String,
         required: [true, "Please provide an asset ID"],
         trim: true,
@@ -31,15 +32,27 @@ const ticketSchema = new mongoose.Schema({
 });
 
 
-// Error handling middleware
-// ticketSchema.pre("save", (error, doc, next) => {
-//     if (error.name === "MongoError" && error.code === 11000) {
-//         next(new Error("Duplicate ticket ID. Please provide a unique ticket ID."));
-//     } else {
-//         next(error);
-//     }
-// });
+// Automatically generate the ticketId before saving a new ticket.
 
-const MaintenanceTicket = mongoose.model('MaintenanceTicket', ticketSchema);
+ticketSchema.pre('save', async function (next) {
+    // If the ticket is not new, go to the next middleware
+    if (!this.isNew) {
+        return next();
+    }
+    // find and update the counter model
+    const counter = await Counter.findByIdAndUpdate(
+        { _id: 'ticketId' },
+        { $inc: { seq: 1 } },
+        { new: true, upsert: true }
+    );
+    // update ticket id
+    this.ticketId = `TCK-${counter.seq}`;
+    next();
+});
 
-export default MaintenanceTicket;
+
+
+
+const Ticket = mongoose.model('Ticket', ticketSchema);
+
+export default Ticket;

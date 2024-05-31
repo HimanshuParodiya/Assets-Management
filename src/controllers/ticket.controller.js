@@ -45,6 +45,14 @@ const raiseTicket = asyncHandler(async (req, res) => {
 
     res.status(201).json(new ApiResponse(201, ticket, "Ticket raised successfully"));
 });
+const getAllTickets = asyncHandler(async (req, res) => {
+    // Fetch all tickets from the database
+    const tickets = await Ticket.find();
+
+    // Return the tickets as a response
+    res.status(200).json(new ApiResponse(200, tickets, "Tickets retrieved successfully"));
+});
+
 const updateTicket = asyncHandler(async (req, res) => {
     // Get the ticket id which needs to be updated
     const ticketId = req.params.id;
@@ -99,4 +107,4 @@ const deleteTicket = asyncHandler(async (req, res) => {
 });
 
 
-export { raiseTicket, updateTicket, deleteTicket }
+export { raiseTicket, getAllTickets, updateTicket, deleteTicket }

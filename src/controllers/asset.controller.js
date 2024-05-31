@@ -63,7 +63,13 @@ const addAsset = asyncHandler(async (req, res) => {
     // Return response
     return res.status(201).json(new ApiResponse(201, createdAsset, "Asset added successfully"));
 });
+const getAllAssets = asyncHandler(async (req, res) => {
+    // Fetch all tickets from the database
+    const tickets = await Asset.find();
 
+    // Return the tickets as a response
+    res.status(200).json(new ApiResponse(200, tickets, "Tickets retrieved successfully"));
+});
 
 const updateAssetDetails = asyncHandler(async (req, res) => {
     // store the update assets id 
@@ -139,4 +145,4 @@ const deleteAsset = asyncHandler(async (req, res) => {
 });
 
 
-export { addAsset, updateAssetDetails, deleteAsset }
+export { addAsset, getAllAssets, updateAssetDetails, deleteAsset }

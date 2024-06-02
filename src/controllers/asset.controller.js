@@ -65,10 +65,10 @@ const addAsset = asyncHandler(async (req, res) => {
 });
 const getAllAssets = asyncHandler(async (req, res) => {
     // Fetch all tickets from the database
-    const tickets = await Asset.find();
+    const assets = await Asset.find();
 
     // Return the tickets as a response
-    res.status(200).json(new ApiResponse(200, tickets, "Tickets retrieved successfully"));
+    res.status(200).json(new ApiResponse(200, assets, "Assets retrieved successfully"));
 });
 
 const updateAssetDetails = asyncHandler(async (req, res) => {
@@ -144,5 +144,25 @@ const deleteAsset = asyncHandler(async (req, res) => {
     res.status(200).json(new ApiResponse(200, asset, "Asset deleted successfully"));
 });
 
+const getAssetDetails = asyncHandler(async (req, res) => {
+    // Extract the asset ID from the request parameters
+    const { id } = req.params;
 
-export { addAsset, getAllAssets, updateAssetDetails, deleteAsset }
+    try {
+        // Use Mongoose to find the asset by its ID
+        const asset = await Asset.findById(id);
+
+        // If the asset is not found, return a 404 error response
+        if (!asset) {
+            return res.status(404).json(new ApiResponse(404, null, "Asset not found"));
+        }
+
+        // If the asset is found, return it in the response
+        res.status(200).json(new ApiResponse(200, asset, "Asset details retrieved successfully"));
+    } catch (error) {
+        // If an error occurs, return a 500 error response
+        res.status(500).json(new ApiResponse(500, null, "Internal server error"));
+    }
+});
+
+export { addAsset, getAllAssets, updateAssetDetails, deleteAsset, getAssetDetails }
